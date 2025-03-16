@@ -10,7 +10,6 @@ namespace Lab_6
         private string _lastName;
         private DateTime _birthDate;
 
-        // Default constructor needed for JSON deserialization
         public Person() : this("Дід", "Мороз", new DateTime(2005, 5, 5))
         {
         }
@@ -18,9 +17,9 @@ namespace Lab_6
         [JsonConstructor]
         public Person(string firstName, string lastName, DateTime birthDate)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            BirthDate = birthDate;
+            _firstName = firstName;
+            _lastName = lastName;
+            _birthDate = birthDate;
         }
 
         public string FirstName { get => _firstName; init => _firstName = value; }

@@ -12,3 +12,4 @@ D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 1\obj\Debug\net9.0\refi
 D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 1\obj\Debug\net9.0\Lab 1.pdb
 D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 1\obj\Debug\net9.0\Lab 1.genruntimeconfig.cache
 D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 1\obj\Debug\net9.0\ref\Lab 1.dll
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 1\obj\Debug\net9.0\Lab 1.sourcelink.json

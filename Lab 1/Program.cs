@@ -1,28 +1,33 @@
 ﻿using Lab_1;
 
 Console.WriteLine("Введiть цiле номер рядкiв, а потiм стовпцiв, роздiлних пробiлом, комою або крапкою з комою:");
-string[] input = Console.ReadLine().Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+string inputLine = Console.ReadLine();
+string[] input = inputLine.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
 int nRows = int.Parse(input[0]);
 int nColumns = int.Parse(input[1]);
+var nRowsColumns = nRows * nColumns;
 
-var oneDimensional = new Paper[nRows * nColumns];
+var oneDimensional = new Paper[nRowsColumns];
 var twoDimensional = new Paper[nRows, nColumns];
-var jaggedArray = new Paper[nRows][];
-var increasingJaggedArray = new Paper[nRows][];
 
-for (int i = 0; i < nRows; i++)
-    jaggedArray[i] = new Paper[nColumns];
-
-int assignedElements = 0;
-for (int i = 0; i < nRows; i++)
+int acc = 0, maxRows = 0;
+while (acc < nRowsColumns)
 {
-    int remaining = (nRows * nColumns) - assignedElements;
-    int rowSize = Math.Min(nColumns, remaining);
-    increasingJaggedArray[i] = new Paper[rowSize];
-    assignedElements += rowSize;
+    maxRows++;
+    acc += maxRows;
 }
 
-for (int i = 0; i < nRows * nColumns; i++)
+var jaggedArray = new Paper[maxRows][];
+for (int i = 0; i < maxRows - 1; i++)
+{
+    jaggedArray[i] = new Paper[i + 1];
+}
+
+jaggedArray[maxRows - 1] = new Paper[maxRows - (acc - nRowsColumns)];
+
+
+for (int i = 0; i < nRowsColumns; i++)
 {
     oneDimensional[i] = new Paper();
 }
@@ -32,12 +37,19 @@ for (int i = 0; i < nRows; i++)
     for (int j = 0; j < nColumns; j++)
     {
         twoDimensional[i, j] = new Paper();
+    }
+}
+
+for (int i = 0; i < jaggedArray.Length; i++)
+{
+    for (int j = 0; j < jaggedArray[i].Length; j++)
+    {
         jaggedArray[i][j] = new Paper();
     }
 }
 
 int startTime = Environment.TickCount;
-for (int i = 0; i < nRows * nColumns; i++)
+for (int i = 0; i < nRowsColumns; i++)
 {
     oneDimensional[i].Author.BirthYear = 2000;
 }
@@ -54,9 +66,9 @@ for (int i = 0; i < nRows; i++)
 int twoDimTime = Environment.TickCount - startTime;
 
 startTime = Environment.TickCount;
-for (int i = 0; i < nRows; i++)
+for (int i = 0; i < jaggedArray.Length; i++)
 {
-    for (int j = 0; j < nColumns; j++)
+    for (int j = 0; j < jaggedArray[i].Length; j++)
     {
         jaggedArray[i][j].Author.BirthYear = 2000;
     }

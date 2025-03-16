@@ -69,6 +69,7 @@ TestCollections testCollections = new TestCollections(collectionSize);
 testCollections.SearchElementsAndMeasureTime();
 
 Console.WriteLine("\nПрограма завершила роботу.");
+return;
 
 int GetCollectionSizeFromUser()
 {

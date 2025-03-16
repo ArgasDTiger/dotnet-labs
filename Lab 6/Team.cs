@@ -9,7 +9,6 @@ namespace Lab_6
         protected string _organization;
         protected int _registrationNumber;
 
-        // Default constructor for JSON deserialization
         public Team() : this("Стандартна команда", 1)
         {
         }

@@ -5,7 +5,6 @@ namespace Lab_6
     [Serializable]
     public class Paper
     {
-        // Default constructor for JSON deserialization
         public Paper() : this("Курсова", new Person(), DateTime.Now)
         {
         }

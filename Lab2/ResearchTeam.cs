@@ -12,20 +12,21 @@ public class ResearchTeam : Team
     public ResearchTeam(string topic, string org, int regNumber, TimeFrame time)
         : base(org, regNumber)
     {
-        _researchTopic = topic;
-        _timeFrame = time;
+        ResearchTopic = topic;
+        TimeFrame = time;
         Members = new ArrayList();
         Publications = new ArrayList();
     }
 
     public ResearchTeam()
     {
-        _researchTopic = "Теорiя штучного iнтелекту";
-        _timeFrame = TimeFrame.Year;
+        ResearchTopic = "Теорiя штучного iнтелекту";
+        TimeFrame = TimeFrame.Year;
         Members = new ArrayList();
         Publications = new ArrayList();
     }
-
+    public string ResearchTopic { get => _researchTopic; init => _researchTopic = value; }
+    public TimeFrame TimeFrame { get => _timeFrame; init => _timeFrame = value; }
     public ArrayList? Publications
     { 
         get => _publications; 
@@ -51,11 +52,11 @@ public class ResearchTeam : Team
 
     public Team Team
     {
-        get => new Team(_organization, _registrationNumber);
+        get => this;
         set
         {
-            _organization = value.Organization;
-            _registrationNumber = value.RegistrationNumber;
+            Organization = value.Organization;
+            RegistrationNumber = value.RegistrationNumber;
         }
     }
 
@@ -68,22 +69,22 @@ public class ResearchTeam : Team
 
     public override object DeepCopy()
     {
-        var copy = new ResearchTeam(_researchTopic, _organization, _registrationNumber, _timeFrame);
+        var copy = new ResearchTeam(ResearchTopic, Organization, RegistrationNumber, TimeFrame);
         
-        if (_members is not null)
+        if (Members is not null)
         {
-            copy._members = new ArrayList();
-            foreach (Person person in _members)
+            copy.Members = new ArrayList();
+            foreach (Person person in Members)
             {
-                copy._members.Add(person.DeepCopy());
+                copy.Members.Add(person.DeepCopy());
             }
         }
 
-        if (_publications == null) return copy;
-        copy._publications = new ArrayList();
-        foreach (Paper paper in _publications)
+        if (Publications == null) return copy;
+        copy.Publications = new ArrayList();
+        foreach (Paper paper in Publications)
         {
-            copy._publications.Add(paper.DeepCopy());
+            copy.Publications.Add(paper.DeepCopy());
         }
 
         return copy;
@@ -91,13 +92,13 @@ public class ResearchTeam : Team
 
     public IEnumerable<Person> MembersWithoutPublications()
     {
-        if (_members == null || _publications == null)
+        if (Members == null || Publications == null)
             yield break;
 
-        foreach (Person member in _members)
+        foreach (Person member in Members)
         {
             bool hasPublication = false;
-            foreach (Paper pub in _publications)
+            foreach (Paper pub in Publications)
             {
                 if (pub.Author == member)
                 {
@@ -112,11 +113,11 @@ public class ResearchTeam : Team
 
     public IEnumerable<Paper> GetPublicationsInLastSpecifiedYears(int n)
     {
-        if (_publications == null)
+        if (Publications == null)
             yield break;
 
         DateTime minusNDate = DateTime.Now.AddYears(-n);
-        foreach (Paper pub in _publications)
+        foreach (Paper pub in Publications)
         {
             if (pub.PublicationDate >= minusNDate)
                 yield return pub;
@@ -125,16 +126,16 @@ public class ResearchTeam : Team
 
     public override string ToString()
     {
-        string membersStr = _members == null ? "Відсутні" : 
-            string.Join("\n", _members.Cast<Person>().Select(m => "- " + m));
-        string publicationsStr = _publications == null ? "Відсутні" : 
-            string.Join("\n", _publications.Cast<Paper>().Select(p => "- " + p));
+        string membersStr = Members == null ? "Відсутні" : 
+            string.Join("\n", Members.Cast<Person>().Select(m => "- " + m));
+        string publicationsStr = Publications == null ? "Відсутні" : 
+            string.Join("\n", Publications.Cast<Paper>().Select(p => "- " + p));
 
-        return $"Дослiдження: {_researchTopic}\nОрганiзацiя: {_organization}\nРеєстрацiя: {_registrationNumber}\nTimeframe: {_timeFrame}\nУчасники:\n{membersStr}\nПублікації:\n{publicationsStr}";
+        return $"Дослiдження: {ResearchTopic}\nОрганiзацiя: {Organization}\nРеєстрацiя: {RegistrationNumber}\nTimeframe: {TimeFrame}\nУчасники:\n{membersStr}\nПублікації:\n{publicationsStr}";
     }
 
     public string ToShortString()
     {
-        return $"Дослiдження: {_researchTopic}\nОрганiзацiя: {Organization}\nРеєстрацiя: {RegistrationNumber}\nTimeframe: {_timeFrame}";
+        return $"Дослiдження: {ResearchTopic}\nОрганiзацiя: {Organization}\nРеєстрацiя: {RegistrationNumber}\nTimeframe: {TimeFrame}";
     }
 }

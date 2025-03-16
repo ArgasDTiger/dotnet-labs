@@ -19,12 +19,12 @@ public class Person
 
     public string FirstName { get => _firstName; init => _firstName = value; }
     public string LastName { get => _lastName; init => _lastName = value; }
-    public DateTime BirthDate { get => _birthDate; init => _birthDate = value; }
+    public DateTime BirthDate { get => _birthDate; set => _birthDate = value; }
     
     public int BirthYear
     {
-        get => _birthDate.Year;
-        set => _birthDate = _birthDate.AddYears(value - _birthDate.Year);
+        get => BirthDate.Year;
+        set => BirthDate = BirthDate.AddYears(value - _birthDate.Year);
     }
 
     public override bool Equals(object? obj)

@@ -2,11 +2,11 @@ namespace Lab3;
 
 public class TestCollections
 {
-    private List<Team> _teams;
-    private List<string> _teamNames;
-    private Dictionary<Team, ResearchTeam> _teamDictionary;
-    private Dictionary<string, ResearchTeam> _teamNameDictionary;
-    private int _size;
+    private readonly List<Team> _teams;
+    private readonly List<string> _teamNames;
+    private readonly Dictionary<Team, ResearchTeam> _teamDictionary;
+    private readonly Dictionary<string, ResearchTeam> _teamNameDictionary;
+    private readonly int _size;
 
     public TestCollections(int size)
     {
@@ -27,7 +27,7 @@ public class TestCollections
         }
     }
 
-    public static ResearchTeam GenerateResearchTeam(int index)
+    private static ResearchTeam GenerateResearchTeam(int index)
     {
         string[] organizations = ["Профспілка", "Організація 1", "Організація 2", "Організація 3", "Організація 4"];
         string[] topics = ["Тема 1", "Тема 2", "Тема 3", "Тема 4", "Тема 5"];

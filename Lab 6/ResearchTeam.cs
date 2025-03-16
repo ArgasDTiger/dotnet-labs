@@ -47,10 +47,7 @@ namespace Lab_6
             set => _publications = value;
         }
 
-        public Team Team
-        {
-            get => new Team(_organization, _registrationNumber);
-        }
+        public Team Team => new Team(_organization, _registrationNumber);
 
         public void AddParticipants(params Person[] persons)
         {
@@ -110,7 +107,7 @@ namespace Lab_6
             }
         }
 
-        public bool Save(string filename)
+        public bool Save(string? filename)
         {
             try
             {
@@ -131,7 +128,7 @@ namespace Lab_6
             }
         }
 
-        public bool Load(string filename)
+        public bool Load(string? filename)
         {
             if (!File.Exists(filename))
             {
@@ -149,18 +146,14 @@ namespace Lab_6
                 string jsonString = File.ReadAllText(filename);
                 ResearchTeam? temp = JsonSerializer.Deserialize<ResearchTeam>(jsonString, options);
 
-                // Only update if deserialization was successful
-                if (temp != null)
-                {
-                    _organization = temp._organization;
-                    _registrationNumber = temp._registrationNumber;
-                    _topic = temp._topic;
-                    _timeFrame = temp._timeFrame;
-                    _participants = temp._participants;
-                    _publications = temp._publications;
-                    return true;
-                }
-                return false;
+                if (temp == null) return false;
+                _organization = temp._organization;
+                _registrationNumber = temp._registrationNumber;
+                _topic = temp._topic;
+                _timeFrame = temp._timeFrame;
+                _participants = temp._participants;
+                _publications = temp._publications;
+                return true;
             }
             catch (Exception ex)
             {
@@ -175,27 +168,30 @@ namespace Lab_6
             Console.WriteLine("Введіть дані у форматі: 'Назва публікації;Ім'я автора;Прізвище автора;Дата народження (DD.MM.YYYY);Дата публікації (DD.MM.YYYY)'");
             Console.WriteLine("Приклад: 'Наукова стаття;Іван;Петренко;01.01.1990;15.06.2023'");
             
-            string input = Console.ReadLine();
-            string[] parts;
-            
+            string? input = Console.ReadLine();
+
             try
             {
-                parts = input.Split(';');
-                if (parts.Length != 5)
+                string[]? parts = input?.Split(';');
+                if (parts != null && parts.Length != 5)
                 {
                     throw new FormatException("Неправильна кількість параметрів");
                 }
+
+                if (parts != null)
+                {
+                    string title = parts[0].Trim();
+                    string firstName = parts[1].Trim();
+                    string lastName = parts[2].Trim();
+                    DateTime birthDate = DateTime.Parse(parts[3].Trim());
+                    DateTime publicationDate = DateTime.Parse(parts[4].Trim());
                 
-                string title = parts[0].Trim();
-                string firstName = parts[1].Trim();
-                string lastName = parts[2].Trim();
-                DateTime birthDate = DateTime.Parse(parts[3].Trim());
-                DateTime publicationDate = DateTime.Parse(parts[4].Trim());
+                    Person author = new Person(firstName, lastName, birthDate);
+                    Paper paper = new Paper(title, author, publicationDate);
                 
-                Person author = new Person(firstName, lastName, birthDate);
-                Paper paper = new Paper(title, author, publicationDate);
-                
-                _publications.Add(paper);
+                    _publications.Add(paper);
+                }
+
                 Console.WriteLine("Публікацію успішно додано!");
                 return true;
             }
@@ -206,7 +202,7 @@ namespace Lab_6
             }
         }
 
-        public static bool Save(string filename, ResearchTeam team)
+        public static bool Save(string? filename, ResearchTeam? team)
         {
             if (team == null)
             {
@@ -217,9 +213,9 @@ namespace Lab_6
             return team.Save(filename);
         }
 
-        public static bool Load(string filename, ResearchTeam team)
+        public static bool Load(string? filename, ResearchTeam? team)
         {
-            if (team == null)
+            if (team is null)
             {
                 Console.WriteLine("Team object is null!");
                 return false;

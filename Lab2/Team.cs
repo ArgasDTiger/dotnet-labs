@@ -7,8 +7,8 @@ public class Team : INameAndCopy
 
     public Team(string organization, int registrationNumber)
     {
-        _organization = organization;
-        _registrationNumber = registrationNumber;
+        Organization = organization;
+        RegistrationNumber = registrationNumber;
     }
 
     public Team() : this("Стандартна команда", 1)
@@ -34,8 +34,8 @@ public class Team : INameAndCopy
 
     public string Name
     {
-        get => _organization;
-        set => _organization = value;
+        get => Organization;
+        set => Organization = value;
     }
 
     public virtual object DeepCopy() => (Team)MemberwiseClone();
