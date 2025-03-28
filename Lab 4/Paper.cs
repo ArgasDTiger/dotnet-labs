@@ -30,4 +30,13 @@ public class Paper
     {
         return $"'{Title}' написав(-ла) {Author.ToShortString()}, опублiковано {PublicationDate:d}";
     }
+
+    public static Paper Create(int index)
+    {
+        return new Paper(
+            $"Публікація {index}",
+            new Person(),
+            DateTime.Now.AddDays(-100 * index)
+        );
+    }
 }

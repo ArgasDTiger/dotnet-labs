@@ -4,18 +4,29 @@ namespace Lab3;
 
 public sealed class ResearchTeamCollection
 {
-    private readonly List<ResearchTeam> _researchTeams = [];
+    private List<ResearchTeam> _researchTeams = [];
+    public List<ResearchTeam> ResearchTeams
+    {
+        get => _researchTeams;
+        private set => _researchTeams = value;
+    }
 
     public void AddDefaults()
     {
         // _researchTeams.Add(new ResearchTeam());
-        _researchTeams.Add(new ResearchTeam("Організація 1", 123, "Штучний інтелект", TimeFrame.TwoYears));
-        _researchTeams.Add(new ResearchTeam("Організація 2", 456, "Квантові обчислення", TimeFrame.Long));
+        ResearchTeams.Add(new ResearchTeam("Організація 1", 123, "Штучний інтелект", TimeFrame.TwoYears));
+        ResearchTeams.Add(new ResearchTeam("Організація 2", 456, "Квантові обчислення", TimeFrame.Long));
     }
 
-    public void AddResearchTeams(params ResearchTeam[] teams)
+    public void AddResearchTeams(params ResearchTeam[]? teams)
     {
-        _researchTeams.AddRange(teams);
+        if (teams is null || teams.Length == 0)
+        {
+            return;
+        }
+
+        ResearchTeams ??= [];
+        ResearchTeams.AddRange(teams);
     }
 
     public override string ToString()
@@ -48,25 +59,25 @@ public sealed class ResearchTeamCollection
 
     public void SortByRegistrationNumber()
     {
-        _researchTeams.Sort((x, y) => x.CompareTo(y));
+        ResearchTeams.Sort((x, y) => x.CompareTo(y));
     }
 
     public void SortByTopic()
     {
-        _researchTeams.Sort(new ResearchTeam());
+        ResearchTeams.Sort(new ResearchTeam());
     }
 
     public void SortByPublicationCount()
     {
-        _researchTeams.Sort(new PublicationComparer());
+        ResearchTeams.Sort(new PublicationComparer());
     }
 
     public int MinRegistrationNumber
     {
         get
         {
-            return _researchTeams.Count > 0 
-                ? _researchTeams.Min(team => team.RegistrationNumber) 
+            return ResearchTeams.Count > 0 
+                ? ResearchTeams.Min(team => team.RegistrationNumber) 
                 : 0;
         }
     }
@@ -75,13 +86,13 @@ public sealed class ResearchTeamCollection
     {
         get
         {
-            return _researchTeams.Where(team => team[TimeFrame.TwoYears]);
+            return ResearchTeams.Where(team => team[TimeFrame.TwoYears]);
         }
     }
 
     public List<ResearchTeam> NGroup(int participantCount)
     {
-        return _researchTeams
+        return ResearchTeams
             .Where(team => team.Participants.Count == participantCount)
             .ToList();
     }

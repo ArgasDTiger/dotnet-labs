@@ -7,8 +7,8 @@ public class Team : INameAndCopy, IComparable<Team>
 
     public Team(string organization, int registrationNumber)
     {
-        _organization = organization;
-        _registrationNumber = registrationNumber;
+        Organization = organization;
+        RegistrationNumber = registrationNumber;
     }
 
     public Team() : this("Стандартна команда", 1)
@@ -34,13 +34,13 @@ public class Team : INameAndCopy, IComparable<Team>
 
     public string Name
     {
-        get => _organization;
-        set => _organization = value;
+        get => Organization;
+        set => Organization = value;
     }
 
     public virtual object DeepCopy()
     {
-        return new Team(_organization, _registrationNumber);
+        return new Team(Organization, RegistrationNumber);
     }
 
     public override bool Equals(object? obj)
@@ -49,8 +49,8 @@ public class Team : INameAndCopy, IComparable<Team>
             return false;
 
         var other = (Team)obj;
-        return _organization == other._organization &&
-               _registrationNumber == other._registrationNumber;
+        return Organization == other.Organization &&
+               RegistrationNumber == other.RegistrationNumber;
     }
 
     public static bool operator ==(Team? left, Team? right)
@@ -67,16 +67,16 @@ public class Team : INameAndCopy, IComparable<Team>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_organization, _registrationNumber);
+        return HashCode.Combine(Organization, RegistrationNumber);
     }
 
     public override string ToString()
     {
-        return $"Організація: {_organization}, Реєстрація: {_registrationNumber}";
+        return $"Організація: {Organization}, Реєстрація: {RegistrationNumber}";
     }
 
     public int CompareTo(Team? other)
     {
-        return other == null ? 1 : _registrationNumber.CompareTo(other._registrationNumber);
+        return other == null ? 1 : RegistrationNumber.CompareTo(other.RegistrationNumber);
     }
 }

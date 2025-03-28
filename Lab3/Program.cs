@@ -64,14 +64,14 @@ foreach (var team in teamsWith2Participants)
 Console.WriteLine("\n\nЧастина 2: Тестування класу TestCollections");
 Console.WriteLine("=================================================");
 
-int collectionSize = GetCollectionSizeFromUser();
+int collectionSize = GetCollectionSizeInput();
 TestCollections testCollections = new TestCollections(collectionSize);
 testCollections.SearchElementsAndMeasureTime();
 
 Console.WriteLine("\nПрограма завершила роботу.");
 return;
 
-int GetCollectionSizeFromUser()
+int GetCollectionSizeInput()
 {
     int size = 0;
     bool validInput = false;

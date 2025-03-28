@@ -66,4 +66,15 @@ public class Person
     {
         return $"{FirstName} {LastName}";
     }
+    
+    public static Person Create(int index)
+    {
+        return new Person
+        (
+
+            $"Ім'я{index}",
+            $"Прізвище{index}",
+            new DateTime(1990 + index, 1 + index % 12, 1 + index % 28)
+        );
+    }
 }

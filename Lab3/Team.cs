@@ -7,8 +7,8 @@ public class Team : INameAndCopy, IComparable<Team>
 
     public Team(string organization, int registrationNumber)
     {
-        _organization = organization;
-        _registrationNumber = registrationNumber;
+        Organization = organization;
+        RegistrationNumber = registrationNumber;
     }
 
     public Team() : this("Стандартна команда", 1)

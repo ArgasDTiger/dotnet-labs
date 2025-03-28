@@ -4,8 +4,13 @@ namespace Lab_5;
 
 public sealed class ResearchTeamCollection
 {
-    private readonly List<ResearchTeam> _researchTeams = [];
-    
+    private List<ResearchTeam> _researchTeams = [];
+    public List<ResearchTeam> ResearchTeams
+    {
+        get => _researchTeams;
+        private set => _researchTeams = value;
+    }
+        
     public string CollectionName { get; init; }
     
     public event TeamListHandler? ResearchTeamAdded;
@@ -20,18 +25,18 @@ public sealed class ResearchTeamCollection
     {
         get
         {
-            if (index >= 0 && index < _researchTeams.Count)
+            if (index >= 0 && index < ResearchTeams.Count)
             {
-                return _researchTeams[index];
+                return ResearchTeams[index];
             }
             throw new IndexOutOfRangeException($"Index {index} is out of range");
         }
         
         init
         {
-            if (index >= 0 && index < _researchTeams.Count)
+            if (index >= 0 && index < ResearchTeams.Count)
             {
-                _researchTeams[index] = value;
+                ResearchTeams[index] = value;
             }
             else
             {
@@ -42,10 +47,9 @@ public sealed class ResearchTeamCollection
     
     public void InsertAt(int j, ResearchTeam researchTeam)
     {
-        if (j >= 0 && j < _researchTeams.Count)
+        if (j >= 0 && j < ResearchTeams.Count)
         {
-            // Insert before element j
-            _researchTeams.Insert(j, researchTeam);
+            ResearchTeams.Insert(j, researchTeam);
             
             ResearchTeamInserted?.Invoke(
                 this,
@@ -58,15 +62,14 @@ public sealed class ResearchTeamCollection
         }
         else
         {
-            _researchTeams.Add(researchTeam);
+            ResearchTeams.Add(researchTeam);
             
-            // Raise the added event
             ResearchTeamAdded?.Invoke(
                 this,
                 new TeamListHandlerEventArgs(
                     CollectionName,
                     "Team added to collection",
-                    _researchTeams.Count - 1
+                    ResearchTeams.Count - 1
                 )
             );
         }
@@ -74,10 +77,10 @@ public sealed class ResearchTeamCollection
     
     public void AddDefaults()
     {
-        _researchTeams.Add(new ResearchTeam("Організація 1", 123, "Штучний інтелект", TimeFrame.TwoYears));
-        _researchTeams.Add(new ResearchTeam("Організація 2", 456, "Квантові обчислення", TimeFrame.Long));
+        ResearchTeams.Add(new ResearchTeam("Організація 1", 123, "Штучний інтелект", TimeFrame.TwoYears));
+        ResearchTeams.Add(new ResearchTeam("Організація 2", 456, "Квантові обчислення", TimeFrame.Long));
         
-        for (int i = _researchTeams.Count - 2; i < _researchTeams.Count; i++)
+        for (int i = ResearchTeams.Count - 2; i < ResearchTeams.Count; i++)
         {
             ResearchTeamAdded?.Invoke(
                 this,
@@ -93,9 +96,9 @@ public sealed class ResearchTeamCollection
     public void AddResearchTeams(params ResearchTeam[] teams)
     {
         int startIndex = _researchTeams.Count;
-        _researchTeams.AddRange(teams);
+        ResearchTeams.AddRange(teams);
         
-        for (int i = startIndex; i < _researchTeams.Count; i++)
+        for (int i = startIndex; i < ResearchTeams.Count; i++)
         {
             ResearchTeamAdded?.Invoke(
                 this,
@@ -110,7 +113,7 @@ public sealed class ResearchTeamCollection
     
     public bool Remove(int index)
     {
-        if (index >= 0 && index < _researchTeams.Count)
+        if (index >= 0 && index < ResearchTeams.Count)
         {
             _researchTeams.RemoveAt(index);
             return true;
@@ -124,7 +127,7 @@ public sealed class ResearchTeamCollection
         sb.AppendLine($"Collection Name: {CollectionName}");
         sb.AppendLine("Список дослідницьких команд:");
         
-        foreach (var team in _researchTeams)
+        foreach (var team in ResearchTeams)
         {
             sb.AppendLine(team.ToString());
             sb.AppendLine("----------");
@@ -150,25 +153,25 @@ public sealed class ResearchTeamCollection
 
     public void SortByRegistrationNumber()
     {
-        _researchTeams.Sort((x, y) => x.CompareTo(y));
+        ResearchTeams.Sort((x, y) => x.CompareTo(y));
     }
 
     public void SortByTopic()
     {
-        _researchTeams.Sort(new ResearchTeam());
+        ResearchTeams.Sort(new ResearchTeam());
     }
 
     public void SortByPublicationCount()
     {
-        _researchTeams.Sort(new PublicationComparer());
+        ResearchTeams.Sort(new PublicationComparer());
     }
 
     public int MinRegistrationNumber
     {
         get
         {
-            return _researchTeams.Count > 0 
-                ? _researchTeams.Min(team => team.RegistrationNumber) 
+            return ResearchTeams.Count > 0 
+                ? ResearchTeams.Min(team => team.RegistrationNumber) 
                 : 0;
         }
     }
@@ -177,7 +180,7 @@ public sealed class ResearchTeamCollection
     {
         get
         {
-            return _researchTeams.Where(team => team[TimeFrame.TwoYears]);
+            return ResearchTeams.Where(team => team[TimeFrame.TwoYears]);
         }
     }
 

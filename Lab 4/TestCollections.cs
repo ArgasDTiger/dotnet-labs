@@ -18,89 +18,151 @@ public class TestCollections
     private SortedDictionary<Team, ResearchTeam> _sortedTeamDictionary;
     private SortedDictionary<string, ResearchTeam> _sortedTeamNameDictionary;
     
-    private int _size;
+    private readonly int _size;
 
     public TestCollections(int size)
     {
-        _size = size;
+        Size = size;
         
-        _teams = new List<Team>();
-        _teamNames = new List<string>();
-        _teamDictionary = new Dictionary<Team, ResearchTeam>();
-        _teamNameDictionary = new Dictionary<string, ResearchTeam>();
+        Teams = [];
+        TeamNames = [];
+        TeamDictionary = new Dictionary<Team, ResearchTeam>();
+        TeamNameDictionary = new Dictionary<string, ResearchTeam>();
         
         var immutableTeamsBuilder = ImmutableList.CreateBuilder<Team>();
         var immutableTeamNamesBuilder = ImmutableList.CreateBuilder<string>();
         var immutableTeamDictionaryBuilder = ImmutableDictionary.CreateBuilder<Team, ResearchTeam>();
         var immutableTeamNameDictionaryBuilder = ImmutableDictionary.CreateBuilder<string, ResearchTeam>();
         
-        _sortedTeamList = new SortedList<Team, ResearchTeam>(new TeamComparer());
-        _sortedTeamNameList = new SortedList<string, ResearchTeam>();
-        _sortedTeamDictionary = new SortedDictionary<Team, ResearchTeam>(new TeamComparer());
-        _sortedTeamNameDictionary = new SortedDictionary<string, ResearchTeam>();
+        SortedTeamList = new SortedList<Team, ResearchTeam>(new TeamComparer());
+        SortedTeamNameList = new SortedList<string, ResearchTeam>();
+        SortedTeamDictionary = new SortedDictionary<Team, ResearchTeam>(new TeamComparer());
+        SortedTeamNameDictionary = new SortedDictionary<string, ResearchTeam>();
 
         for (int i = 0; i < size; i++)
         {
             ResearchTeam team = GenerateResearchTeam(i);
             string teamString = team.Team.ToString();
             
-            _teams.Add(team.Team);
-            _teamNames.Add(teamString);
-            _teamDictionary.Add(team.Team, team);
-            _teamNameDictionary.Add(teamString, team);
+            Teams.Add(team.Team);
+            TeamNames.Add(teamString);
+            TeamDictionary.Add(team.Team, team);
+            TeamNameDictionary.Add(teamString, team);
             
             immutableTeamsBuilder.Add(team.Team);
             immutableTeamNamesBuilder.Add(teamString);
             immutableTeamDictionaryBuilder.Add(team.Team, team);
             immutableTeamNameDictionaryBuilder.Add(teamString, team);
             
-            _sortedTeamList.Add(team.Team, team);
-            _sortedTeamNameList.Add(teamString, team);
-            _sortedTeamDictionary.Add(team.Team, team);
-            _sortedTeamNameDictionary.Add(teamString, team);
+            SortedTeamList.Add(team.Team, team);
+            SortedTeamNameList.Add(teamString, team);
+            SortedTeamDictionary.Add(team.Team, team);
+            SortedTeamNameDictionary.Add(teamString, team);
         }
         
-        _immutableTeams = immutableTeamsBuilder.ToImmutable();
-        _immutableTeamNames = immutableTeamNamesBuilder.ToImmutable();
-        _immutableTeamDictionary = immutableTeamDictionaryBuilder.ToImmutable();
-        _immutableTeamNameDictionary = immutableTeamNameDictionaryBuilder.ToImmutable();
+        ImmutableTeams = immutableTeamsBuilder.ToImmutable();
+        ImmutableTeamNames = immutableTeamNamesBuilder.ToImmutable();
+        ImmutableTeamDictionary = immutableTeamDictionaryBuilder.ToImmutable();
+        ImmutableTeamNameDictionary = immutableTeamNameDictionaryBuilder.ToImmutable();
+    }
+
+    public List<Team> Teams
+    {
+        get => _teams; 
+        init => _teams = value;
+    }
+
+    private List<string> TeamNames
+    {
+        get => _teamNames; 
+        init => _teamNames = value;
+    }
+
+    private Dictionary<Team, ResearchTeam> TeamDictionary
+    {
+        get => _teamDictionary; 
+        init => _teamDictionary = value;
+    }
+
+    public Dictionary<string, ResearchTeam> TeamNameDictionary
+    {
+        get => _teamNameDictionary; 
+        init => _teamNameDictionary = value;
+    }
+
+    public ImmutableList<Team> ImmutableTeams
+    {
+        get => _immutableTeams;
+        init => _immutableTeams = value;
+    }
+
+    public ImmutableList<string> ImmutableTeamNames
+    {
+        get => _immutableTeamNames; 
+        init => _immutableTeamNames = value;
+    }
+
+    public ImmutableDictionary<Team, ResearchTeam> ImmutableTeamDictionary
+    {
+        get => _immutableTeamDictionary;
+        init => _immutableTeamDictionary = value;
+    }
+
+    public ImmutableDictionary<string, ResearchTeam> ImmutableTeamNameDictionary
+    {
+        get => _immutableTeamNameDictionary;
+        init => _immutableTeamNameDictionary = value;
+    }
+
+    public SortedList<Team, ResearchTeam> SortedTeamList
+    {
+        get => _sortedTeamList; 
+        init => _sortedTeamList = value;
+    }
+
+    public SortedList<string, ResearchTeam> SortedTeamNameList
+    {
+        get => _sortedTeamNameList; 
+        init => _sortedTeamNameList = value;
+    }
+
+    public SortedDictionary<Team, ResearchTeam> SortedTeamDictionary
+    {
+        get => _sortedTeamDictionary;
+        init => _sortedTeamDictionary = value;
+    }
+
+    public SortedDictionary<string, ResearchTeam> SortedTeamNameDictionary
+    {
+        get => _sortedTeamNameDictionary; 
+        init => _sortedTeamNameDictionary = value;
+    }
+    
+    private int Size
+    {
+        get => _size;
+        init
+        {
+            if (value <= 0)
+                throw new ArgumentException("Size must be greater than zero.");
+            _size = value;
+        }
     }
 
     public static ResearchTeam GenerateResearchTeam(int index)
     {
-        string[] organizations = ["Профспілка", "Організація 1", "Організація 2", "Організація 3", "Організація 4"];
-        string[] topics = ["Тема 1", "Тема 2", "Тема 3", "Тема 4", "Тема 5"];
-        TimeFrame[] timeFrames = [TimeFrame.Year, TimeFrame.TwoYears, TimeFrame.Long];
-
-        int orgIndex = index % organizations.Length;
-        int topicIndex = index % topics.Length;
-        int timeFrameIndex = index % timeFrames.Length;
-
-        var team = new ResearchTeam(
-            organizations[orgIndex], 
-            334 + index, 
-            topics[topicIndex], 
-            timeFrames[timeFrameIndex]
-        );
+        var team = ResearchTeam.Create(index);
 
         int participantCount = 1 + index % 4;
         for (int i = 0; i < participantCount; i++)
         {
-            team.AddParticipants(new Person(
-                $"Ім'я{i}",
-                $"Прізвище{i}",
-                new DateTime(1990 + i, 1 + i % 12, 1 + i % 28)
-            ));
+            team.AddParticipants(Person.Create(index));
         }
 
         int publicationCount = 1 + index % 5;
         for (int i = 0; i < publicationCount; i++)
         {
-            team.AddPapers(new Paper(
-                $"Публікація {i}",
-                new Person(),
-                DateTime.Now.AddDays(-100 * i)
-            ));
+            team.AddPapers(Paper.Create(i));
         }
 
         return team;
@@ -109,23 +171,23 @@ public class TestCollections
     public void SearchElementsAndMeasureTime()
     {
         const int firstIndex = 0;
-        int middleIndex = _size / 2;
-        int lastIndex = _size - 1;
-        int notExistingIndex = _size + 1;
+        int middleIndex = Size / 2;
+        int lastIndex = Size - 1;
+        int notExistingIndex = Size + 1;
 
-        var firstTeam = _teams[firstIndex];
-        var middleTeam = _teams[middleIndex];
-        var lastTeam = _teams[lastIndex];
+        var firstTeam = ResearchTeam.Create(firstIndex);
+        var middleTeam = ResearchTeam.Create(middleIndex);
+        var lastTeam = ResearchTeam.Create(lastIndex);
         var notExistingTeam = GenerateResearchTeam(notExistingIndex).Team;
 
-        string firstName = _teamNames[firstIndex];
-        string middleName = _teamNames[middleIndex];
-        string lastName = _teamNames[lastIndex];
+        string firstName = TeamNames[firstIndex];
+        string middleName = TeamNames[middleIndex];
+        string lastName = TeamNames[lastIndex];
         string notExistingName = notExistingTeam.ToString();
 
-        var firstResearchTeam = _teamDictionary[firstTeam];
-        var middleResearchTeam = _teamDictionary[middleTeam];
-        var lastResearchTeam = _teamDictionary[lastTeam];
+        var firstResearchTeam = TeamDictionary[firstTeam];
+        var middleResearchTeam = TeamDictionary[middleTeam];
+        var lastResearchTeam = TeamDictionary[lastTeam];
         var notExistingResearchTeam = GenerateResearchTeam(notExistingIndex);
 
         Console.WriteLine("\nВимірювання часу пошуку елементів у колекціях:");
@@ -156,32 +218,32 @@ public class TestCollections
         Console.WriteLine("-------------------");
 
         int startTime = Environment.TickCount;
-        bool containsTeam = _teams.Contains(team);
+        bool containsTeam = Teams.Contains(team);
         int endTime = Environment.TickCount - startTime;
         Console.WriteLine($"List<Team>.Contains: {endTime} мс ({containsTeam})");
 
         startTime = Environment.TickCount;
-        bool containsTeamName = _teamNames.Contains(teamName);
+        bool containsTeamName = TeamNames.Contains(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"List<string>.Contains: {endTime} мс ({containsTeamName})");
 
         startTime = Environment.TickCount;
-        bool containsTeamKey = _teamDictionary.ContainsKey(team);
+        bool containsTeamKey = TeamDictionary.ContainsKey(team);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"Dictionary<Team, ResearchTeam>.ContainsKey: {endTime} мс ({containsTeamKey})");
 
         startTime = Environment.TickCount;
-        bool containsTeamNameKey = _teamNameDictionary.ContainsKey(teamName);
+        bool containsTeamNameKey = TeamNameDictionary.ContainsKey(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"Dictionary<string, ResearchTeam>.ContainsKey: {endTime} мс ({containsTeamNameKey})");
 
         startTime = Environment.TickCount;
-        bool containsResearchTeam = _teamDictionary.ContainsValue(researchTeam);
+        bool containsResearchTeam = TeamDictionary.ContainsValue(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"Dictionary<Team, ResearchTeam>.ContainsValue: {endTime} мс ({containsResearchTeam})");
 
         startTime = Environment.TickCount;
-        bool containsResearchTeamByName = _teamNameDictionary.ContainsValue(researchTeam);
+        bool containsResearchTeamByName = TeamNameDictionary.ContainsValue(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"Dictionary<string, ResearchTeam>.ContainsValue: {endTime} мс ({containsResearchTeamByName})");
     }
@@ -192,32 +254,32 @@ public class TestCollections
         Console.WriteLine("-------------------");
 
         int startTime = Environment.TickCount;
-        bool containsTeam = _immutableTeams.Contains(team);
+        bool containsTeam = ImmutableTeams.Contains(team);
         int endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableList<Team>.Contains: {endTime} мс ({containsTeam})");
 
         startTime = Environment.TickCount;
-        bool containsTeamName = _immutableTeamNames.Contains(teamName);
+        bool containsTeamName = ImmutableTeamNames.Contains(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableList<string>.Contains: {endTime} мс ({containsTeamName})");
 
         startTime = Environment.TickCount;
-        bool containsTeamKey = _immutableTeamDictionary.ContainsKey(team);
+        bool containsTeamKey = ImmutableTeamDictionary.ContainsKey(team);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableDictionary<Team, ResearchTeam>.ContainsKey: {endTime} мс ({containsTeamKey})");
 
         startTime = Environment.TickCount;
-        bool containsTeamNameKey = _immutableTeamNameDictionary.ContainsKey(teamName);
+        bool containsTeamNameKey = ImmutableTeamNameDictionary.ContainsKey(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableDictionary<string, ResearchTeam>.ContainsKey: {endTime} мс ({containsTeamNameKey})");
 
         startTime = Environment.TickCount;
-        bool containsResearchTeam = _immutableTeamDictionary.Values.Contains(researchTeam);
+        bool containsResearchTeam = ImmutableTeamDictionary.Values.Contains(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableDictionary<Team, ResearchTeam>.Values.Contains: {endTime} мс ({containsResearchTeam})");
 
         startTime = Environment.TickCount;
-        bool containsResearchTeamByName = _immutableTeamNameDictionary.Values.Contains(researchTeam);
+        bool containsResearchTeamByName = ImmutableTeamNameDictionary.Values.Contains(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"ImmutableDictionary<string, ResearchTeam>.Values.Contains: {endTime} мс ({containsResearchTeamByName})");
     }
@@ -228,42 +290,42 @@ public class TestCollections
         Console.WriteLine("-------------------");
 
         int startTime = Environment.TickCount;
-        bool containsSortedTeamKey = _sortedTeamList.ContainsKey(team);
+        bool containsSortedTeamKey = SortedTeamList.ContainsKey(team);
         int endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedList<Team, ResearchTeam>.ContainsKey: {endTime} мс ({containsSortedTeamKey})");
 
         startTime = Environment.TickCount;
-        bool containsSortedTeamNameKey = _sortedTeamNameList.ContainsKey(teamName);
+        bool containsSortedTeamNameKey = SortedTeamNameList.ContainsKey(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedList<string, ResearchTeam>.ContainsKey: {endTime} мс ({containsSortedTeamNameKey})");
         
         startTime = Environment.TickCount;
-        bool containsSortedDictionaryTeamKey = _sortedTeamDictionary.ContainsKey(team);
+        bool containsSortedDictionaryTeamKey = SortedTeamDictionary.ContainsKey(team);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedDictionary<Team, ResearchTeam>.ContainsKey: {endTime} мс ({containsSortedDictionaryTeamKey})");
 
         startTime = Environment.TickCount;
-        bool containsSortedDictionaryTeamNameKey = _sortedTeamNameDictionary.ContainsKey(teamName);
+        bool containsSortedDictionaryTeamNameKey = SortedTeamNameDictionary.ContainsKey(teamName);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedDictionary<string, ResearchTeam>.ContainsKey: {endTime} мс ({containsSortedDictionaryTeamNameKey})");
 
         startTime = Environment.TickCount;
-        bool containsSortedTeamValue = _sortedTeamList.ContainsValue(researchTeam);
+        bool containsSortedTeamValue = SortedTeamList.ContainsValue(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedList<Team, ResearchTeam>.ContainsValue: {endTime} мс ({containsSortedTeamValue})");
 
         startTime = Environment.TickCount;
-        bool containsSortedTeamNameValue = _sortedTeamNameList.ContainsValue(researchTeam);
+        bool containsSortedTeamNameValue = SortedTeamNameList.ContainsValue(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedList<string, ResearchTeam>.ContainsValue: {endTime} мс ({containsSortedTeamNameValue})");
         
         startTime = Environment.TickCount;
-        bool containsSortedDictionaryTeamValue = _sortedTeamDictionary.Values.Contains(researchTeam);
+        bool containsSortedDictionaryTeamValue = SortedTeamDictionary.Values.Contains(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedDictionary<Team, ResearchTeam>.Values.Contains: {endTime} мс ({containsSortedDictionaryTeamValue})");
 
         startTime = Environment.TickCount;
-        bool containsSortedDictionaryTeamNameValue = _sortedTeamNameDictionary.Values.Contains(researchTeam);
+        bool containsSortedDictionaryTeamNameValue = SortedTeamNameDictionary.Values.Contains(researchTeam);
         endTime = Environment.TickCount - startTime;
         Console.WriteLine($"SortedDictionary<string, ResearchTeam>.Values.Contains: {endTime} мс ({containsSortedDictionaryTeamNameValue})");
     }

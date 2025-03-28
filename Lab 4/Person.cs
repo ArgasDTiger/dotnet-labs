@@ -19,12 +19,12 @@ public class Person
 
     public string FirstName { get => _firstName; init => _firstName = value; }
     public string LastName { get => _lastName; init => _lastName = value; }
-    public DateTime BirthDate { get => _birthDate; init => _birthDate = value; }
+    public DateTime BirthDate { get => _birthDate; set => _birthDate = value; }
     
     public int BirthYear
     {
         get => BirthDate.Year;
-        set => _birthDate = BirthDate.AddYears(value - BirthDate.Year);
+        set => BirthDate = BirthDate.AddYears(value - BirthDate.Year);
     }
 
     public override bool Equals(object? obj)
@@ -65,5 +65,16 @@ public class Person
     public virtual string ToShortString()
     {
         return $"{FirstName} {LastName}";
+    }
+
+    public static Person Create(int index)
+    {
+        return new Person
+        (
+
+            $"Ім'я{index}",
+            $"Прізвище{index}",
+            new DateTime(1990 + index, 1 + index % 12, 1 + index % 28)
+        );
     }
 }

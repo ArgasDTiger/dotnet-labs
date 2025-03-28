@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Lab3;
 
 using System;
@@ -50,13 +52,25 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public Team Team => this;
 
-    public void AddParticipants(params Person[] persons)
+    public void AddParticipants(params Person[]? persons)
     {
+        if (persons is null || persons.Length == 0)
+        {
+            return;
+        }
+
+        Participants ??= [];
         Participants.AddRange(persons);
     }
 
-    public void AddPapers(params Paper[] papers)
+    public void AddPapers(params Paper[]? papers)
     {
+        if (papers is null || papers.Length == 0)
+        {
+            return;
+        }
+
+        Publications ??= [];
         Publications.AddRange(papers);
     }
 
@@ -92,35 +106,36 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public override string ToString()
     {
-        string result = $"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}\n";
-        
-        result += "Учасники:\n";
+        var result = new StringBuilder();
+        result.AppendLine($"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}");
+            
+        result.AppendLine("Учасники:");
         if (Participants.Count > 0)
         {
             foreach (Person person in Participants)
             {
-                result += $"- {person}\n";
+                result.AppendLine($"- {person}");
             }
         }
         else
         {
-            result += "- Немає учасників\n";
+            result.AppendLine("- Немає учасників");
         }
         
-        result += "Публікації:\n";
+        result.AppendLine("Публікації:");
         if (Publications.Count > 0)
         {
             foreach (Paper? paper in Publications)
             {
-                result += $"- {paper}\n";
+                result.AppendLine($"- {paper}");
             }
         }
         else
         {
-            result += "- Немає публікацій\n";
+            result.AppendLine("- Немає публікацій");
         }
         
-        return result;
+        return result.ToString();
     }
 
     public virtual string ToShortString()
@@ -142,4 +157,33 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
         return string.CompareOrdinal(x.Topic, y.Topic);
     }
 
+    public static ResearchTeam Create(int index)
+    {
+        string[] topics = ["Тема 1", "Тема 2", "Тема 3", "Тема 4", "Тема 5"];
+        TimeFrame[] timeFrames = [TimeFrame.Year, TimeFrame.TwoYears, TimeFrame.Long];
+
+        int topicIndex = index % topics.Length;
+        int timeFrameIndex = index % timeFrames.Length;
+
+        var team = new ResearchTeam(
+            "Організація " + index, 
+            index, 
+            topics[topicIndex], 
+            timeFrames[timeFrameIndex]
+        );
+
+        int participantCount = 1 + index % 4;
+        for (int i = 0; i < participantCount; i++)
+        {
+            team.AddParticipants(Person.Create(i));
+        }
+
+        int publicationCount = 1 + index % 5;
+        for (int i = 0; i < publicationCount; i++)
+        {
+            team.AddPapers(Paper.Create(i));
+        }
+
+        return team;
+    }
 }

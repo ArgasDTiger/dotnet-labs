@@ -14,10 +14,10 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
     public ResearchTeam(string organization, int registrationNumber, string topic, TimeFrame timeFrame)
         : base(organization, registrationNumber)
     {
-        _topic = topic;
-        _timeFrame = timeFrame;
-        _participants = new List<Person>();
-        _publications = new List<Paper?>();
+        Topic = topic;
+        TimeFrame = timeFrame;
+        Participants = [];
+        Publications = [];
     }
 
     public ResearchTeam() : this("Стандартна організація", 1, "Стандартна тема", TimeFrame.Year)
@@ -55,19 +55,19 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public void AddParticipants(params Person[] persons)
     {
-        _participants.AddRange(persons);
+        Participants.AddRange(persons);
     }
 
     public void AddPapers(params Paper[] papers)
     {
-        _publications.AddRange(papers);
+        Publications.AddRange(papers);
     }
 
     public Paper? LatestPublication
     {
         get
         {
-            return _publications.Count == 0 ? null : _publications.OrderByDescending(p => p?.PublicationDate).First();
+            return Publications.Count == 0 ? null : Publications.OrderByDescending(p => p?.PublicationDate).First();
         }
     }
 
@@ -75,18 +75,18 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public override object DeepCopy()
     {
-        ResearchTeam copy = new ResearchTeam(_organization, _registrationNumber, _topic, _timeFrame);
+        ResearchTeam copy = new ResearchTeam(Organization, RegistrationNumber, Topic, TimeFrame);
         
         foreach (Person person in _participants)
         {
-            copy._participants.Add((Person)person.DeepCopy());
+            copy.Participants.Add((Person)person.DeepCopy());
         }
         
         foreach (Paper? paper in _publications)
         {
             if (paper is not null)
             {
-                copy._publications.Add((Paper)paper.DeepCopy());
+                copy.Publications.Add((Paper)paper.DeepCopy());
             }
         }
         
@@ -95,12 +95,12 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public override string ToString()
     {
-        string result = $"{base.ToString()}, Тема: {_topic}, Тривалість: {_timeFrame}\n";
+        string result = $"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}\n";
         
         result += "Учасники:\n";
-        if (_participants.Count > 0)
+        if (Participants.Count > 0)
         {
-            foreach (Person person in _participants)
+            foreach (Person person in Participants)
             {
                 result += $"- {person}\n";
             }
@@ -111,9 +111,9 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
         }
         
         result += "Публікації:\n";
-        if (_publications.Count > 0)
+        if (Participants.Count > 0)
         {
-            foreach (Paper? paper in _publications)
+            foreach (Paper? paper in Publications)
             {
                 result += $"- {paper}\n";
             }
@@ -128,7 +128,7 @@ public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchT
 
     public virtual string ToShortString()
     {
-        return $"{base.ToString()}, Тема: {_topic}, Тривалість: {_timeFrame}, Кількість учасників: {_participants.Count}, Кількість публікацій: {_publications.Count}";
+        return $"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}, Кількість учасників: {Participants.Count}, Кількість публікацій: {Publications.Count}";
     }
 
     public int CompareTo(ResearchTeam? other)
