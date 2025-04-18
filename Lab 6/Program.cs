@@ -1,6 +1,5 @@
 ﻿using Lab_6;
 
-
 Console.OutputEncoding = System.Text.Encoding.UTF8;
     
 ResearchTeam originalTeam = new ResearchTeam(
@@ -14,8 +13,18 @@ originalTeam.AddPapers(
     new Paper("Розвиток нейронних мереж", new Person("Іван", "Ковальчук", new DateTime(1985, 5, 15)), new DateTime(2023, 3, 10)),
     new Paper("Машинне навчання в медицині", new Person("Олена", "Петренко", new DateTime(1990, 8, 22)), new DateTime(2023, 5, 5))
 );
-    
-ResearchTeam copiedTeam = (ResearchTeam)originalTeam.DeepCopy();
+
+ResearchTeam copiedTeam;
+
+try
+{
+    copiedTeam = (ResearchTeam)originalTeam.DeepCopy();
+}
+catch
+{
+    Console.WriteLine("Failed to make a deep copy of an original team.");
+    return;
+}
     
 Console.WriteLine("=== Оригінальний об'єкт: ===");
 Console.WriteLine(originalTeam);

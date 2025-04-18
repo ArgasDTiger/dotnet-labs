@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Serialization;
 
 namespace Lab_6
@@ -16,8 +15,8 @@ namespace Lab_6
         [JsonConstructor]
         public Team(string organization, int registrationNumber)
         {
-            _organization = organization;
-            _registrationNumber = registrationNumber;
+            Organization = organization;
+            RegistrationNumber = registrationNumber;
         }
 
         public string Organization
@@ -39,13 +38,13 @@ namespace Lab_6
 
         public string Name
         {
-            get => _organization;
-            set => _organization = value;
+            get => Organization;
+            set => Organization = value;
         }
 
         public virtual object DeepCopy()
         {
-            return new Team(_organization, _registrationNumber);
+            return new Team(Organization, RegistrationNumber);
         }
 
         public override bool Equals(object? obj)
@@ -54,8 +53,8 @@ namespace Lab_6
                 return false;
 
             var other = (Team)obj;
-            return _organization == other._organization &&
-                   _registrationNumber == other._registrationNumber;
+            return Organization == other.Organization &&
+                   RegistrationNumber == other.RegistrationNumber;
         }
 
         public static bool operator ==(Team? left, Team? right)
@@ -72,17 +71,17 @@ namespace Lab_6
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_organization, _registrationNumber);
+            return HashCode.Combine(Organization, RegistrationNumber);
         }
 
         public override string ToString()
         {
-            return $"Організація: {_organization}, Реєстрація: {_registrationNumber}";
+            return $"Організація: {Organization}, Реєстрація: {RegistrationNumber}";
         }
 
         public int CompareTo(Team? other)
         {
-            return other == null ? 1 : _registrationNumber.CompareTo(other._registrationNumber);
+            return other == null ? 1 : RegistrationNumber.CompareTo(other.RegistrationNumber);
         }
     }
 }

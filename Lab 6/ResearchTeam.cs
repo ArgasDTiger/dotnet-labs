@@ -5,6 +5,12 @@ namespace Lab_6
     [Serializable]
     public class ResearchTeam : Team, IComparable<ResearchTeam>, IComparer<ResearchTeam>
     {
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+        };
+        
         private string _topic;
         private TimeFrame _timeFrame;
         private List<Person> _participants;
@@ -13,10 +19,10 @@ namespace Lab_6
         public ResearchTeam(string organization, int registrationNumber, string topic, TimeFrame timeFrame)
             : base(organization, registrationNumber)
         {
-            _topic = topic;
-            _timeFrame = timeFrame;
-            _participants = new List<Person>();
-            _publications = new List<Paper?>();
+            Topic = topic;
+            TimeFrame = timeFrame;
+            Participants = [];
+            Publications = [];
         }
 
         public ResearchTeam() : this("Стандартна організація", 1, "Стандартна тема", TimeFrame.Year)
@@ -47,77 +53,49 @@ namespace Lab_6
             set => _publications = value;
         }
 
-        public Team Team => new Team(_organization, _registrationNumber);
+        public Team Team => new Team(Organization, RegistrationNumber);
 
         public void AddParticipants(params Person[] persons)
         {
-            _participants.AddRange(persons);
+            Participants.AddRange(persons);
         }
 
         public void AddPapers(params Paper[] papers)
         {
-            _publications.AddRange(papers);
+            if (papers == null || papers.Length == 0) return;
+            Publications.AddRange(papers);
         }
 
         public Paper? LatestPublication
         {
             get
             {
-                return _publications.Count == 0 ? null : _publications.OrderByDescending(p => p?.PublicationDate).First();
+                return Publications.Count == 0 ? null : Publications.OrderByDescending(p => p?.PublicationDate).First();
             }
         }
 
-        public bool this[TimeFrame timeFrame] => _timeFrame == timeFrame;
+        public bool this[TimeFrame timeFrame] => TimeFrame == timeFrame;
 
         public new object DeepCopy()
         {
             try
             {
-                // Use JSON serialization for deep copy
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    // Set up preserving references to handle circular references
-                    ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-                };
-                
-                string jsonString = JsonSerializer.Serialize(this, options);
-                return JsonSerializer.Deserialize<ResearchTeam>(jsonString, options)!;
+                var jsonString = JsonSerializer.Serialize(this, JsonSerializerOptions);
+                return JsonSerializer.Deserialize<ResearchTeam>(jsonString, JsonSerializerOptions)!;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating deep copy: {ex.Message}");
-                // Fall back to manual deep copy if serialization fails
-                ResearchTeam copy = new ResearchTeam(_organization, _registrationNumber, _topic, _timeFrame);
-                
-                foreach (Person person in _participants)
-                {
-                    copy._participants.Add((Person)person.DeepCopy());
-                }
-                
-                foreach (Paper? paper in _publications)
-                {
-                    if (paper is not null)
-                    {
-                        copy._publications.Add((Paper)paper.DeepCopy());
-                    }
-                }
-                
-                return copy;
+                throw;
             }
         }
 
         public bool Save(string? filename)
         {
+            if (filename is null) return false;
             try
             {
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-                };
-                
-                string jsonString = JsonSerializer.Serialize(this, options);
+                var jsonString = JsonSerializer.Serialize(this, JsonSerializerOptions);
                 File.WriteAllText(filename, jsonString);
                 return true;
             }
@@ -130,6 +108,7 @@ namespace Lab_6
 
         public bool Load(string? filename)
         {
+            if (filename is null) return false;
             if (!File.Exists(filename))
             {
                 Console.WriteLine("File does not exist!");
@@ -138,21 +117,29 @@ namespace Lab_6
 
             try
             {
-                var options = new JsonSerializerOptions
-                {
-                    ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-                };
-                
-                string jsonString = File.ReadAllText(filename);
-                ResearchTeam? temp = JsonSerializer.Deserialize<ResearchTeam>(jsonString, options);
+                var jsonString = File.ReadAllText(filename);
+        
+                var temp = JsonSerializer.Deserialize<ResearchTeam>(jsonString, JsonSerializerOptions);
 
                 if (temp == null) return false;
-                _organization = temp._organization;
-                _registrationNumber = temp._registrationNumber;
-                _topic = temp._topic;
-                _timeFrame = temp._timeFrame;
-                _participants = temp._participants;
-                _publications = temp._publications;
+        
+                Organization = temp.Organization;
+                RegistrationNumber = temp.RegistrationNumber;
+                Topic = temp.Topic;
+                TimeFrame = temp.TimeFrame;
+        
+                Participants.Clear();
+                foreach (var person in temp.Participants)
+                {
+                    Participants.Add(person);
+                }
+        
+                Publications.Clear();
+                foreach (var paper in temp.Publications.OfType<Paper>())
+                {
+                    Publications.Add(paper);
+                }
+        
                 return true;
             }
             catch (Exception ex)
@@ -168,11 +155,11 @@ namespace Lab_6
             Console.WriteLine("Введіть дані у форматі: 'Назва публікації;Ім'я автора;Прізвище автора;Дата народження (DD.MM.YYYY);Дата публікації (DD.MM.YYYY)'");
             Console.WriteLine("Приклад: 'Наукова стаття;Іван;Петренко;01.01.1990;15.06.2023'");
             
-            string? input = Console.ReadLine();
+            var input = Console.ReadLine();
 
             try
             {
-                string[]? parts = input?.Split(';');
+                var parts = input?.Split(';');
                 if (parts != null && parts.Length != 5)
                 {
                     throw new FormatException("Неправильна кількість параметрів");
@@ -180,16 +167,16 @@ namespace Lab_6
 
                 if (parts != null)
                 {
-                    string title = parts[0].Trim();
-                    string firstName = parts[1].Trim();
-                    string lastName = parts[2].Trim();
-                    DateTime birthDate = DateTime.Parse(parts[3].Trim());
-                    DateTime publicationDate = DateTime.Parse(parts[4].Trim());
+                    var title = parts[0].Trim();
+                    var firstName = parts[1].Trim();
+                    var lastName = parts[2].Trim();
+                    var birthDate = DateTime.Parse(parts[3].Trim());
+                    var publicationDate = DateTime.Parse(parts[4].Trim());
                 
-                    Person author = new Person(firstName, lastName, birthDate);
-                    Paper paper = new Paper(title, author, publicationDate);
+                    var author = new Person(firstName, lastName, birthDate);
+                    var paper = new Paper(title, author, publicationDate);
                 
-                    _publications.Add(paper);
+                    Publications.Add(paper);
                 }
 
                 Console.WriteLine("Публікацію успішно додано!");
@@ -204,34 +191,22 @@ namespace Lab_6
 
         public static bool Save(string? filename, ResearchTeam? team)
         {
-            if (team == null)
-            {
-                Console.WriteLine("Team object is null!");
-                return false;
-            }
-
-            return team.Save(filename);
+            return team != null && team.Save(filename);
         }
 
         public static bool Load(string? filename, ResearchTeam? team)
         {
-            if (team is null)
-            {
-                Console.WriteLine("Team object is null!");
-                return false;
-            }
-
-            return team.Load(filename);
+            return team is not null && team.Load(filename);
         }
 
         public override string ToString()
         {
-            string result = $"{base.ToString()}, Тема: {_topic}, Тривалість: {_timeFrame}\n";
+            var result = $"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}\n";
             
             result += "Учасники:\n";
-            if (_participants.Count > 0)
+            if (Participants.Count > 0)
             {
-                foreach (Person person in _participants)
+                foreach (Person person in Participants)
                 {
                     result += $"- {person}\n";
                 }
@@ -242,9 +217,9 @@ namespace Lab_6
             }
             
             result += "Публікації:\n";
-            if (_publications.Count > 0)
+            if (Publications.Count > 0)
             {
-                foreach (Paper? paper in _publications)
+                foreach (Paper? paper in Publications)
                 {
                     result += $"- {paper}\n";
                 }
@@ -259,7 +234,7 @@ namespace Lab_6
 
         public virtual string ToShortString()
         {
-            return $"{base.ToString()}, Тема: {_topic}, Тривалість: {_timeFrame}, Кількість учасників: {_participants.Count}, Кількість публікацій: {_publications.Count}";
+            return $"{base.ToString()}, Тема: {Topic}, Тривалість: {TimeFrame}, Кількість учасників: {Participants.Count}, Кількість публікацій: {Publications.Count}";
         }
 
         public int CompareTo(ResearchTeam? other)

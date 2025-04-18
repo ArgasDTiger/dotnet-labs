@@ -58,24 +58,20 @@ do
 
 } while (keyInfo.Key != ConsoleKey.Q && keyInfo.Key != ConsoleKey.D1 && keyInfo.Key != ConsoleKey.D0);
 
+return;
+
 IHasName? Couple(Human first, Human second)
 {
-    // Validate input parameters
     ArgumentNullException.ThrowIfNull(first);
 
-    if (second == null)
-    {
-        throw new ArgumentNullException(nameof(second));
-    }
-    
-    // Check for same gender
+    ArgumentNullException.ThrowIfNull(second);
+
     if (first.IsMale() == second.IsMale())
     {
         throw new SameGenderException($"Both humans are of the same gender: {first.GetType().Name} and {second.GetType().Name}");
     }
     
-    // 1. Get attributes of the first human
-    CoupleAttribute[] firstAttributes = first.GetType()
+    var firstAttributes = first.GetType()
         .GetCustomAttributes<CoupleAttribute>(true)
         .ToArray();
         
@@ -84,7 +80,6 @@ IHasName? Couple(Human first, Human second)
         throw new CouplingException($"{first.GetType().Name} has no Couple attributes defined");
     }
     
-    // 2. Find matching attribute for the second human's type
     string secondTypeName = second.GetType().Name;
     CoupleAttribute? matchingAttribute = firstAttributes
         .FirstOrDefault(attr => string.Equals(attr.Pair, secondTypeName, StringComparison.Ordinal));
@@ -95,13 +90,11 @@ IHasName? Couple(Human first, Human second)
         return null;
     }
     
-    // Validate the matched attribute values
     if (string.IsNullOrEmpty(matchingAttribute.ChildType))
     {
         throw new CouplingException($"ChildType is not set in the Couple attribute for {first.GetType().Name} and {secondTypeName}");
     }
     
-    // Check if first human likes second human based on probability
     bool firstLikesSecond = random.NextDouble() <= matchingAttribute.Probability;
     Console.WriteLine($"Does {first.GetType().Name} like {secondTypeName}? {firstLikesSecond}");
     
@@ -110,8 +103,7 @@ IHasName? Couple(Human first, Human second)
         return null;
     }
     
-    // 3. Check if second human likes first human
-    CoupleAttribute[] secondAttributes = second.GetType()
+    var secondAttributes = second.GetType()
         .GetCustomAttributes<CoupleAttribute>(true)
         .ToArray();
         
@@ -138,8 +130,7 @@ IHasName? Couple(Human first, Human second)
         return null;
     }
     
-    // 4. Mutual attraction - get name of the child from second's first string method
-    string childName = second.Name; // Default to second's name
+    string childName = second.Name;
     try
     {
         MethodInfo? nameMethod = second
@@ -159,13 +150,10 @@ IHasName? Couple(Human first, Human second)
     catch (Exception ex)
     {
         Console.WriteLine($"Error getting name: {ex.Message}");
-        // Continue with the default name
     }
     
-    // 5. Create child instance
     string childTypeName = matchingAttribute.ChildType;
     
-    // Try to find the type in the current assembly
     Type? childType = AppDomain.CurrentDomain.GetAssemblies()
         .SelectMany(a => a.GetTypes())
         .FirstOrDefault(t => t.Name == childTypeName);
@@ -175,13 +163,11 @@ IHasName? Couple(Human first, Human second)
         throw new CouplingException($"Child type not found: {childTypeName}");
     }
     
-    // Ensure the type implements IHasName
     if (!typeof(IHasName).IsAssignableFrom(childType))
     {
         throw new CouplingException($"Child type {childTypeName} does not implement IHasName interface");
     }
     
-    // Create child instance
     object? childObj = Activator.CreateInstance(childType);
     if (childObj == null)
     {
@@ -190,7 +176,6 @@ IHasName? Couple(Human first, Human second)
     
     IHasName child = (IHasName)childObj;
     
-    // Set the name property
     PropertyInfo? nameProperty = childType.GetProperty("Name");
     if (nameProperty != null && nameProperty.CanWrite)
     {
@@ -201,11 +186,10 @@ IHasName? Couple(Human first, Human second)
         Console.WriteLine($"Warning: Cannot set Name property on {childTypeName}");
     }
     
-    // Check for "Patronymic" property
     PropertyInfo? patronymicProperty = childType.GetProperty("Patronymic");
     if (patronymicProperty != null && patronymicProperty.CanWrite)
     {
-        string suffix = first.IsMale() ? "ович" : "овна";
+        string suffix = first.IsMale() ? "ович" : "івна";
         string patronymic = first.Name + suffix;
         patronymicProperty.SetValue(child, patronymic);
     }

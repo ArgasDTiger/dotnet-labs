@@ -93,8 +93,10 @@ public sealed class ResearchTeamCollection
         }
     }
 
-    public void AddResearchTeams(params ResearchTeam[] teams)
+    public void AddResearchTeams(params ResearchTeam[]? teams)
     {
+        if (teams == null || teams.Length == 0)
+            return;
         int startIndex = _researchTeams.Count;
         ResearchTeams.AddRange(teams);
         

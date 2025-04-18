@@ -6,7 +6,7 @@ namespace Lab_7;
 [Couple(Pair = "SmartGirl", Probability = 0.8, ChildType = "Book")]
 public class Botan : Human
 {
-    public Botan() // Fixed constructor name
+    public Botan()
     {
         Name = "Botan";
     }

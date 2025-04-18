@@ -1,75 +1,87 @@
-using System;
-using System.Text.Json.Serialization;
+namespace Lab_6;
 
-namespace Lab_6
+[Serializable]
+public class Person
 {
-    [Serializable]
-    public class Person
+    private string _firstName;
+    private string _lastName;
+    private DateTime _birthDate;
+
+    public Person()
     {
-        private string _firstName;
-        private string _lastName;
-        private DateTime _birthDate;
+        _firstName = "Дід";
+        _lastName = "Мороз";
+        _birthDate = new DateTime(2005, 5, 5);
+    }
 
-        public Person() : this("Дід", "Мороз", new DateTime(2005, 5, 5))
-        {
-        }
+    public Person(string firstName, string lastName, DateTime birthDate)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        BirthDate = birthDate;
+    }
 
-        [JsonConstructor]
-        public Person(string firstName, string lastName, DateTime birthDate)
-        {
-            _firstName = firstName;
-            _lastName = lastName;
-            _birthDate = birthDate;
-        }
-
-        public string FirstName { get => _firstName; init => _firstName = value; }
-        public string LastName { get => _lastName; init => _lastName = value; }
-        public DateTime BirthDate { get => _birthDate; init => _birthDate = value; }
+    public string FirstName 
+    { 
+        get => _firstName; 
+        set => _firstName = value; 
+    }
         
-        public int BirthYear
-        {
-            get => BirthDate.Year;
-            set => _birthDate = BirthDate.AddYears(value - BirthDate.Year);
-        }
+    public string LastName 
+    { 
+        get => _lastName; 
+        set => _lastName = value; 
+    }
+        
+    public DateTime BirthDate 
+    { 
+        get => _birthDate; 
+        set => _birthDate = value; 
+    }
+        
+    public int BirthYear
+    {
+        get => BirthDate.Year;
+        set => BirthDate = BirthDate.AddYears(value - BirthDate.Year);
+    }
 
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+            return false;
 
-            Person other = (Person)obj;
-            return FirstName == other.FirstName &&
-                   LastName == other.LastName &&
-                   BirthDate == other.BirthDate;
-        }
+        Person other = (Person)obj;
+        return FirstName == other.FirstName &&
+               LastName == other.LastName &&
+               BirthDate == other.BirthDate;
+    }
 
-        public static bool operator ==(Person? left, Person? right)
-        {
-            if (ReferenceEquals(left, right)) return true;
-            if (left is null || right is null) return false;
-            return left.Equals(right);
-        }
+    public static bool operator ==(Person? left, Person? right)
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (left is null || right is null) return false;
+        return left.Equals(right);
+    }
 
-        public static bool operator !=(Person? left, Person? right)
-        {
-            return !(left == right);
-        }
+    public static bool operator !=(Person? left, Person? right)
+    {
+        return !(left == right);
+    }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(FirstName, LastName, BirthDate);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(FirstName, LastName, BirthDate);
+    }
 
-        public virtual object DeepCopy() => (Person)MemberwiseClone();
+    public virtual object DeepCopy() => new Person(FirstName, LastName, BirthDate);
 
-        public override string ToString()
-        {
-            return $"{FirstName} {LastName}, народжений(-а) {BirthDate:d}";
-        }
+    public override string ToString()
+    {
+        return $"{FirstName} {LastName}, народжений(-а) {BirthDate:d}";
+    }
 
-        public virtual string ToShortString()
-        {
-            return $"{FirstName} {LastName}";
-        }
+    public virtual string ToShortString()
+    {
+        return $"{FirstName} {LastName}";
     }
 }
