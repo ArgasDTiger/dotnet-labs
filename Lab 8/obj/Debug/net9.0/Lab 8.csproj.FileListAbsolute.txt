@@ -1,0 +1,15 @@
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\bin\Debug\net9.0\Lab 8.exe
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\bin\Debug\net9.0\Lab 8.deps.json
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\bin\Debug\net9.0\Lab 8.runtimeconfig.json
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\bin\Debug\net9.0\Lab 8.dll
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\bin\Debug\net9.0\Lab 8.pdb
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.GeneratedMSBuildEditorConfig.editorconfig
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.AssemblyInfoInputs.cache
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.AssemblyInfo.cs
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.csproj.CoreCompileInputs.cache
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.sourcelink.json
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.dll
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\refint\Lab 8.dll
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.pdb
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\Lab 8.genruntimeconfig.cache
+D:\AProgramming\Unik\dotnet\Term 6\Laboratory Workds\Lab 8\obj\Debug\net9.0\ref\Lab 8.dll
