@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks.Dataflow;
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks.Dataflow;
+using Lab_8;
 
 string? directoryPath = null;
 
@@ -34,89 +36,133 @@ if (textFiles.Length == 0)
 }
 
 Console.WriteLine("Max degree: " + Environment.ProcessorCount);
-
-
 Console.WriteLine($"Found {textFiles.Length} text files\n");
 
-var results = new Dictionary<string, int>();
+var results = new ConcurrentDictionary<string, int>();
 
-var searchBlock = new TransformBlock<string, (string FilePath, int Count)>(
-    filePath => SearchInFile(filePath, searchString, results),
+var loadFileBlock = new TransformBlock<string, (ProgressReport FileInfo, List<string> Lines)>(
+    filePath => 
+    {
+        string fileName = Path.GetFileName(filePath);
+        var lines = new List<string>();
+        
+        try
+        {
+            lines = File.ReadAllLines(filePath).ToList();
+            int totalLines = lines.Count;
+            
+            Console.WriteLine($"Starting to process {fileName} with {totalLines} lines");
+            
+            return (new ProgressReport
+            {
+                FileName = filePath,
+                CurrentLine = 0,
+                TotalLines = totalLines
+            }, lines);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing {fileName}: {ex.Message}");
+            return (new ProgressReport
+            {
+                FileName = filePath,
+                CurrentLine = 0,
+                TotalLines = 0
+            }, lines);
+        }
+    },
     new ExecutionDataflowBlockOptions
     {
         MaxDegreeOfParallelism = Environment.ProcessorCount
     });
 
-var printBlock = new ActionBlock<(string FilePath, int Count)>(
-    _ => { });
+var processBlock = new TransformBlock<(ProgressReport FileInfo, List<string> Lines), FileSearchResult>(
+    data => 
+    {
+        var (fileInfo, lines) = data;
+        FileSearchResult result = ProcessFileContent(fileInfo, lines, searchString, results);
+        Console.WriteLine($"{Path.GetFileName(result.FileName)}: Search completed, {result.OccurrencesCount} occurrences found");
+        return result;
+    },
+    new ExecutionDataflowBlockOptions
+    {
+        MaxDegreeOfParallelism = Environment.ProcessorCount
+    });
 
-searchBlock.LinkTo(printBlock, new DataflowLinkOptions { PropagateCompletion = true });
+var completionBlock = new ActionBlock<FileSearchResult>(
+    _ => { },
+    new ExecutionDataflowBlockOptions
+    {
+        MaxDegreeOfParallelism = 1
+    });
+
+loadFileBlock.LinkTo(processBlock, new DataflowLinkOptions { PropagateCompletion = true });
+processBlock.LinkTo(completionBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
 foreach (var file in textFiles)
 {
-    searchBlock.Post(file);
+    loadFileBlock.Post(file);
 }
 
-searchBlock.Complete();
-await printBlock.Completion;
+loadFileBlock.Complete();
+
+await completionBlock.Completion;
 
 Console.WriteLine("\nFinished!!! Results:");
-foreach (var result in results)
+foreach (var result in results.OrderByDescending(r => r.Value))
 {
     Console.WriteLine($"{Path.GetFileName(result.Key)}: {result.Value} occurrences");
 }
 return;
 
-(string, int) SearchInFile(string filePath, string searchString,  Dictionary<string, int> results)
+FileSearchResult ProcessFileContent(ProgressReport fileInfo, List<string> lines, string searchString, ConcurrentDictionary<string, int> results)
 {
-    string fileName = Path.GetFileName(filePath);
+    string fileName = Path.GetFileName(fileInfo.FileName);
     int occurrences = 0;
     int processedLines = 0;
     int lastReportedPercentage = -1;
     var lastProgressUpdate = DateTime.MinValue;
     
-    try
+    int totalLines = lines.Count;
+    
+    if (totalLines == 0)
     {
-        var totalLines = File.ReadLines(filePath).Count();
-        
-        if (totalLines == 0)
-        {
-            Console.WriteLine($"{fileName} is empty");
-            results[filePath] = 0;
-            return (filePath, 0);
-        }
-        
-        using (var reader = new StreamReader(filePath))
-        {
-            while (reader.ReadLine() is { } line)
-            {
-                processedLines++;
-                
-                int lineOccurrences = CountOccurrences(line, searchString);
-                occurrences += lineOccurrences;
-                
-                int currentPercentage = (int)((double)processedLines / totalLines * 100);
-                if ((currentPercentage != lastReportedPercentage && 
-                    (DateTime.Now - lastProgressUpdate).TotalSeconds >= 0.05) ||
-                    processedLines == totalLines)
-                {
-                    Console.WriteLine($"{fileName}: processed {currentPercentage}%");
-                    lastReportedPercentage = currentPercentage;
-                    lastProgressUpdate = DateTime.Now;
-                }
-            }
-        }
-        
-        results[filePath] = occurrences;
-        
-        return (filePath, occurrences);
+        Console.WriteLine($"{fileName} is empty");
+        results[fileInfo.FileName] = 0;
+        return new FileSearchResult 
+        { 
+            FileName = fileInfo.FileName,
+            OccurrencesCount = 0,
+            TotalLines = 0
+        };
     }
-    catch (Exception ex)
+    
+    foreach (var line in lines)
     {
-        Console.WriteLine($"Error processing {fileName}: {ex.Message}");
-        results[filePath] = -1;
-        return (filePath, -1);
+        processedLines++;
+        
+        int lineOccurrences = CountOccurrences(line, searchString);
+        occurrences += lineOccurrences;
+        
+        int currentPercentage = (int)((double)processedLines / totalLines * 100);
+        if ((currentPercentage != lastReportedPercentage && 
+            (DateTime.Now - lastProgressUpdate).TotalSeconds >= 0.05) ||
+            processedLines == totalLines)
+        {
+            Console.WriteLine($"{fileName}: processed {currentPercentage}%");
+            lastReportedPercentage = currentPercentage;
+            lastProgressUpdate = DateTime.Now;
+        }
     }
+    
+    results[fileInfo.FileName] = occurrences;
+    
+    return new FileSearchResult
+    {
+        FileName = fileInfo.FileName,
+        OccurrencesCount = occurrences,
+        TotalLines = totalLines
+    };
 }
 
 int CountOccurrences(string? source, string searchString)
